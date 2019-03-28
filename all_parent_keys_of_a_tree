@@ -1,0 +1,217 @@
+$mongoDefaultObject = new MongoDB();
+$mongoDBs = $mongoDefaultObject->listMongoDBs();
+$hiddenDBsArray = array('admin', 'local');
+$searching_key_path = array('mother','f','u','c','k','e','r');
+
+
+/**
+ * 
+ */
+class Hello 
+{
+    public $store=array();
+    function tree($parentkey,$firstparent, $tree)
+{
+foreach($tree as $key=>$val)
+{
+echo"<pre>";
+//print_r($tree);
+
+if(is_array($val))
+{
+$parentkey = $parentkey."->".$key;
+$this->tree($parentkey,$key, $val);
+}
+ 
+$string = explode('->',$parentkey);
+$lastele = array_pop($string);
+if($lastele==$key){
+} else {
+array_push($string,$lastele);
+}
+$parentkey = implode('->',$string);
+echo "\n<br>";
+print_r($parentkey."->".$key);
+$this->store[] = $parentkey."->".$key;
+end($tree);
+$endkey=key($tree);
+If($key==$endkey&& isset($firstparent))
+{
+//echo 'remove last one elements';
+
+}
+if($key == "K")
+{
+}
+}
+return $this->store;
+}
+}
+
+
+function get_parents_keys($key_match, $array)
+{
+  foreach ($array as $key => $value){
+    if (is_array($value)){
+      if (in_array($key_match, array_keys($value)))
+        return array($key);
+      else{
+        $chain = get_parents_keys($key_match, $value);
+        if (!is_null($chain))
+          return array_merge(array($key), $chain);
+      }
+    }
+  }
+  return null;
+}
+
+function array_keys_multi($subject,array $array)
+{
+    $keys = $keys_ =array();
+    foreach ($array as $key => $value) {
+        $keys[] = $key;
+
+        if (is_array($value)){
+          if (in_array($subject, array_keys($value))){
+            $keys_ = array($key);
+            return 1;
+          }
+          else{
+            $chain = array_keys_multi($subject, $value);
+            if (!is_null($chain))
+              $keys_ = array_merge(array($key), $chain);
+          }
+        }
+        if (is_array($array[$key])) {
+            $keys = array_merge($keys, array_keys_multi($subject, $array[$key]));
+        }
+    }
+    return $keys_;
+}
+
+function returnParentKeys($array,$searching_key_path)
+{
+    foreach ($searching_key_path as $key => $value) {
+       $s[$value] = get_parents_keys($value, $array);
+    }
+    return $s;
+}
+
+
+
+if (!file_exists('mongoDump')){
+	@mkdir('mongoDump');
+}
+
+
+
+foreach($mongoDBs as $database){
+	if(!in_array($database->getName(), $hiddenDBsArray)){
+			if (!file_exists('mongoDump/'.$database->getName())){
+				@mkdir('mongoDump/'.$database->getName());
+			}
+		$thisDBCollections = $mongoDefaultObject->listDBCollections($database->getName());
+		foreach ($thisDBCollections as $collection){
+			if (!file_exists('mongoDump/'.$database->getName().'/'.$collection->getName())) {
+				@mkdir('mongoDump/'.$database->getName().'/'.$collection->getName());
+			}
+			$mongo_Internal_Object = new MongoDB($collection->getName(), $database->getName());
+			
+			$first_collection_data
+				[][$database->getName()]
+				[$collection->getName()] = $mongo_Internal_Object->find();
+
+            $array = $first_collection_data;
+        }
+    }
+}
+
+
+
+function ancestorPathOfKey($subject, $keys_array,$array)
+{
+    foreach ($array as $key => $value) {
+        if(in_array($subject, $keys_array)) {
+            return array($key);
+        } else {
+            if(is_array($value)){
+                $keys_array[$key] = array_keys($value);
+                ancestorPathOfKey($subject,$keys_array[$key], $value);
+            } else{
+                $keys_array[$key] = array_keys($subject,ancestorPathOfKey($subject,$keys_array, $value));
+            }
+        }
+    }
+    return $keys_array;
+}
+echo "<pre>";
+print_r($array[53]);
+echo "<pre>";
+$obj = new Hello();
+function tree($parentkey,$firstparent, $tree)
+{
+foreach($tree as $key=>$val)
+{
+echo"<pre>";
+//print_r($tree);
+
+if(is_array($val))
+{
+$parentkey = $parentkey."->".$key;
+tree($parentkey,$key, $val);
+}
+ 
+$string = explode('->',$parentkey);
+$lastele = array_pop($string);
+if($lastele==$key){
+} else {
+array_push($string,$lastele);
+}
+$parentkey = implode('->',$string);
+echo "\n<br>";
+print_r($parentkey."->".$key);
+end($tree);
+$endkey=key($tree);
+If($key==$endkey&& isset($firstparent))
+{
+//echo 'remove last one elements';
+
+}
+if($key == "K")
+{
+}
+}
+}
+
+tree("node","" ,$array[53]);
+print_r($obj->tree('node','',$array[53]));
+//print_r(dada('mother', array_keys((array)$atlas), (array)$atlas));
+//                print_r(array_keys_multi($searching_key_path,(array)$atlas));
+die;
+
+$zipping_folder = function($rootPath, $zipped_file_name, $files_to_zip=array()) {
+// Get real path for our folder
+// Initialize archive object
+    $zip = new ZipArchive();
+    $zip->open($zipped_file_name, ZipArchive::CREATE | ZipArchive::OVERWRITE);
+    // Create recursive directory iterator
+    /** @var SplFileInfo[] $files */
+    $files = new RecursiveIteratorIterator(
+        new RecursiveDirectoryIterator($rootPath),
+        RecursiveIteratorIterator::LEAVES_ONLY
+    );
+    foreach ($files as $name => $file){
+        // Skip directories (they would be added automatically)
+        if (!$file->isDir()){
+            // Get real and relative path for current file
+            $filePath = $file->getRealPath();
+            $relativePath = substr($filePath, strlen($rootPath) + 1);
+
+            // Add current file to archive
+            $zip->addFile($filePath, $relativePath);
+        }
+    }
+    // Zip archive will be created only after closing object
+    $zip->close();
+
+};
