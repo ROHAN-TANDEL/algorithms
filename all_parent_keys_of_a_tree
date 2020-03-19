@@ -1,3 +1,95 @@
+/**
+ * Find Parents
+ * 
+ * Convert N multidimentional array to single dimentional Array
+ * 
+ * Jumps to each value for any array and keeps the track of parents until the child is found
+ * as soon as the child is found key value pair is store in result this continues for each node child and returns a final array
+ *
+ * @param array $nArray
+ * @param string $keySequence
+ * @param array $store
+ * @author Rohan Tandel
+ * @version 1.0
+ * @return array
+ */
+function findParents($nArray, $keySequence, $store=[])
+{
+    # validate for array
+    if(!empty($nArray) && is_array($nArray)) {
+        #first iteration loop
+        foreach($nArray as $firstKey=>$firstValue) {
+            # store the result
+            if(is_array($firstValue)) {
+                # if not array store the result for the value with all it's parent
+                # jumps out of loop and goto end result to return next call everything fresh - 
+                # persist result for single dimentional
+                $store = findParents($firstValue, $keySequence. "_".$firstKey, $store);
+            } else {
+                $store[$keySequence."_".$firstKey]=$firstValue;
+            }
+        }
+        $result[] = $store;
+    }
+
+    //only carries the details of final result
+    $finalVal = array_pop($result);
+    if(!empty($finalVal)) {
+        $returnVal = $finalVal;
+    } else {
+        $returnVal = [];
+    }
+    return $returnVal;
+}
+
+
+// req
+#create multi dimentional array
+#depth - N 
+#method to sort the array
+# convert multi dimentional to sngle dimentional os depth N
+
+# sol -1 using recussion
+# sol -2 array functons
+# sol -3 
+# "a_b"=>c
+
+# find array 
+# if array then recall function persist key
+# if not store key and go to next
+
+//inputs
+
+$nArray = [
+        'a' => [
+                "b"=> [
+                        "a","b","c"
+                    ]
+                ],
+        'b' => [
+                "c","d","e"
+            ]
+    ];
+
+echo "<pre>";
+print_r(findParents($nArray,''));
+
+//Output 
+/**
+* Array
+* (
+*     [_a_b_0] => a
+*     [_a_b_1] => b
+*     [_a_b_2] => c
+*     [_b_0] => c
+*     [_b_1] => d
+*     [_b_2] => e
+* )
+*/
+
+
+
+
 $mongoDefaultObject = new MongoDB();
 $mongoDBs = $mongoDefaultObject->listMongoDBs();
 $hiddenDBsArray = array('admin', 'local');
